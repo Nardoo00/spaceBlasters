@@ -112,6 +112,14 @@ public class GamePanel extends JPanel implements ActionListener {
             System.out.println("Game Over!");
             updateHighScore(); // Update high score if needed
             timer.stop();
+
+            // Show Game Over screen
+            JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            topFrame.remove(this); // Remove current GamePanel
+            topFrame.add(new GameOverPanel((SpaceBlasters) topFrame, score)); // Add GameOverPanel
+            topFrame.revalidate();
+            topFrame.repaint();
+
             return;
         }
 
@@ -163,81 +171,78 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         // Update enemies and handle their shooting logic
-        for (int i = 0; i < enemies.size(); i++) {
-            Enemy enemy = enemies.get(i);
-            enemy.update();
+		for (int i = 0; i < enemies.size(); i++) { 
+			Enemy enemy = enemies.get(i); 
+			enemy.update(); 
 
-            // Random chance for enemies to shoot
-            if (Math.random() < 0.02) {
-                enemy.shoot(enemyBullets);
-            }
+			// Random chance for enemies to shoot 
+			if (Math.random() < 0.02) { 
+				enemy.shoot(enemyBullets); 
+			} 
 
-            // Check if enemy collides with player
-            if (enemy.collidesWith(player)) {
-                System.out.println("Player hit by enemy!");
-                player.takeDamage();
-                enemies.remove(i);
-                i--;
-            }
+			// Check if enemy collides with player 
+			if (enemy.collidesWith(player)) { 
+				System.out.println("Player hit by enemy!"); 
+				player.takeDamage(); 
+				enemies.remove(i); 
+				i--; 
+			}
 
-            // Remove enemies that go off-screen
-            if (enemy.isOffScreen()) {
-                enemies.remove(i);
-                i--;
-            }
-        }
+			// Remove off-screen enemies 
+			if (enemy.isOffScreen()) { 
+				enemies.remove(i); 
+				i--; 
+			} 
+		}
 
-        // Update power-ups
-        for (int i = 0; i < powerUps.size(); i++) {
-            PowerUp powerUp = powerUps.get(i);
-            powerUp.update();
+		// Update power-ups 
+		for (int i = 0; i < powerUps.size(); i++) { 
+			PowerUp powerUp = powerUps.get(i); 
+			powerUp.update(); 
 
-            // Check if power-up is collected
-            if (powerUp.isCollected(player)) {
-                if (powerUp.getType().equals("health")) {
-                    // Restore health if health power-up is collected
-                    player.restoreHealth();
-                    System.out.println("Health Restored!");
-                }
-                powerUps.remove(i);  // Remove the power-up after it’s collected
-                i--; // Adjust index due to removal
-            }
+			if (powerUp.isCollected(player)) { 
+				if ("health".equals(powerUp.getType())) { 
+					player.restoreHealth();  
+					System.out.println("Health Restored!");  
+				} 
 
-            // Remove off-screen power-ups
-            if (powerUp.isOffScreen()) {
-                powerUps.remove(i);
-                i--;
-            }
-        }
+				powerUps.remove(i);  
+				i--;  
+			} 
 
-        // Spawn new enemies and power-ups
-        if (Math.random() < 0.02) spawnEnemies();
-        if (Math.random() < 0.01) spawnPowerUps();  // Spawn power-ups periodically
-    }
+			if (powerUp.isOffScreen()) { 
+				powerUps.remove(i);  
+				i--;  
+			} 
+		}
 
-    private void spawnEnemies() {
-        int x = (int) (Math.random() * 750);
-        enemies.add(new Enemy(x, 0));
-    }
+		// Spawn new enemies and power-ups periodically 
+		if (Math.random() < 0.02) spawnEnemies(); 
+		if (Math.random() < 0.01) spawnPowerUps();  
+	}
 
-    private void spawnPowerUps() {
-        int x = (int) (Math.random() * 750);  // Random x position
-        powerUps.add(new PowerUp(x, 0, "health")); // Create a health power-up
-    }
+	private void spawnEnemies() { 
+    	int x = (int)(Math.random() * 750);  
+    	enemies.add(new Enemy(x, 0));  
+	}
 
-    private void drawStars(Graphics g) {
-        g.setColor(Color.WHITE);
-        for (int i = 0; i < 100; i++) {
-            int x = (int) (Math.random() * getWidth());
-            int y = (int) (Math.random() * getHeight());
-            g.fillRect(x, y, 2, 2);
-        }
-    }
+	private void spawnPowerUps() {  
+    	int x = (int)(Math.random() * 750);  
+    	powerUps.add(new PowerUp(x, 0, "health"));  
+   }
 
-    // Update the high score if the current score exceeds the high score
-    private void updateHighScore() {
-        if (score > highScore) {
-            highScore = score;
-        }
-    }
+   private void drawStars(Graphics g) {  
+      g.setColor(Color.WHITE);  
+      for (int i = 0; i < 100; i++) {  
+          int x = (int)(Math.random() * getWidth());  
+          int y = (int)(Math.random() * getHeight());  
+          g.fillRect(x, y, 2, 2);  
+      }  
+   }
+
+   private void updateHighScore() {  
+      if (score > highScore) {  
+          highScore = score;  
+      }  
+   }
 }
