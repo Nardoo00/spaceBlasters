@@ -1,5 +1,6 @@
 package spaceBlasters;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -10,37 +11,48 @@ public class Player {
     private int screenWidth = 800;
     private int screenHeight = 600;
     private int health; // Player's health
+    private ImageIcon player; // Holds the animated GIF
 
     public Player(int startX, int startY) {
         x = startX; // starting position
         y = startY;
         health = 3; // Starting health
+
+        // Load the animated GIF only once in the constructor
+        try {
+            player = new ImageIcon(getClass().getResource("/ships/ship01.gif"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.BLUE);
-        g.fillRect(x, y, width, height);
+        if (player != null) {
+            // Draw the animated GIF at the player's position, scaling it to the player's size
+            g.drawImage(player.getImage(), x, y, width, height, null);
+        } else {
+            // Fallback if the GIF fails to load
+            g.setColor(Color.BLUE);
+            g.fillRect(x, y, width, height);
+        }
 
         // Draw health bar
-        g.setColor(Color.RED);
+        g.setColor(Color.GREEN);
         for (int i = 0; i < health; i++) {
             g.fillRect(x + i * 20, y - 10, 15, 5);
         }
     }
 
     public void update() {
+        // Update player-related logic if needed
     }
 
     public void moveToMouse(int mouseX, int mouseY) {
-        // Horizontal movement
         x = mouseX - width / 2;
-        if (x < 0) x = 0;
-        if (x > screenWidth - width) x = screenWidth - width;
+        x = Math.max(0, Math.min(x, screenWidth - width));
 
-        // Vertical movement
         y = mouseY - height / 2;
-        if (y < 0) y = 0;
-        if (y > screenHeight - height) y = screenHeight - height;
+        y = Math.max(0, Math.min(y, screenHeight - height));
     }
 
     public void autoShoot(ArrayList<Bullet> bullets) {
@@ -61,9 +73,23 @@ public class Player {
         return health > 0;
     }
 
-    public int getX() { return x; }
-    public int getY() { return y; }
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
-    public int getHealth() { return health; }
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getHealth() {
+        return health;
+    }
 }
